@@ -1,0 +1,63 @@
+---
+title: "Institutions"
+author: "Paul-Antoine Chevalier"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Pour faciliter l'usage des données de consultations sur les institutions, ce script R permet de générer un fichier au format tabulaire.
+
+```{r}
+library(listviewer)
+library(rvest)
+library(purrr)
+library(tibble)
+library(magrittr)
+library(dataAN)
+library(readr)
+library(xml2)
+```
+
+## Import du fichier XML
+
+```{r}
+list_institutions <- read_xml(x = "http://data.assemblee-nationale.fr/static/openData/repository/CONSULTATIONS_CITOYENNES/INSTITUTIONS/Institutions.xml") %>% as_list()
+```
+
+## Table des thèmes
+
+```{r}
+tibble(
+  titre_theme = map_chr(map(list_institutions$themes, .f = "titre"), 1)
+  )
+```
+
+## Table des réponses à une question
+
+```{r}
+make_reponses_table(x = list_institutions$themes[[1]]$questions[[1]]) %>% glimpse()
+```
+
+## Table des questions-réponses pour un thème 
+
+```{r}
+make_questions_reponses_table(x = list_institutions$themes[[1]]) %>%
+  glimpse()
+```
+
+## Table de l'ensemble des questions réponses avec tous les thèmes
+
+```{r}
+map_df(.x = list_institutions$themes, make_questions_reponses_table)
+```
+
+## Export au format CSV
+
+```{r}
+table_questions_reponses <- map_df(.x = list_institutions$themes, make_questions_reponses_table)
+write_csv(table_questions_reponses, path = "../raw-data/institutions.csv")
+```
