@@ -14,7 +14,9 @@ Imports:
     magrittr,
     tibble,
     xml2,
-    rvest
+    rvest,
+    plyr,
+    jsonlite
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
