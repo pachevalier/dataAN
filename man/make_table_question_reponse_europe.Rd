@@ -4,10 +4,12 @@
 \alias{make_table_question_reponse_europe}
 \title{Make a table with the question and all answers}
 \usage{
-make_table_question_reponse_europe(i)
+make_table_question_reponse_europe(list, i)
 }
 \arguments{
-\item{i}{}
+\item{list}{the name of the list}
+
+\item{i}{an index}
 }
 \value{
 a tibble

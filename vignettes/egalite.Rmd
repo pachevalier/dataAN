@@ -1,0 +1,61 @@
+---
+title: "Egalite hommes-femmes"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Import des données JSON
+
+```{r}
+library(dplyr)
+library(magrittr)
+library(purrr)
+library(tibble)
+library(jsonlite)
+library(dataAN)
+json_egalite <- fromJSON("http://data.assemblee-nationale.fr/static/openData/repository/CONSULTATIONS_CITOYENNES/EGALITE/EGALITE.json")
+```
+
+## Création de la table des enquêtés 
+
+```{r}
+table_enquetes <- tibble(
+  id = extract2(json_egalite, "id"),
+  sexe = extract2(json_egalite, "sexe")
+  ) %>%
+  rownames_to_column(var = "id_enquete")
+```
+
+## Création de la table des questions réponses 
+
+```{r}
+make_table_egalite_question(extract2(extract2(json_egalite, "questions"), 1))  %>% glimpse()
+```
+
+```{r}
+table_questions_reponses <- map_df(.x = extract2(json_egalite, "questions"), make_table_egalite_question, .id = "id_enquete")
+```
+
+## Jointure des tables enquêtés et question-réponse
+
+```{r}
+table_questions_reponses %>%
+  left_join(y = table_enquetes, by = "id_enquete")
+```
+
+
+## Exports CSV
+
+```{r}
+library(readr)
+write_csv(table_enquetes, "../raw-data/table_egalites_enquetes.csv")
+write_csv(table_questions_reponses, "../raw-data/table_egalites_questions_reponses.csv")
+
+```
+
+
