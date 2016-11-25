@@ -15,6 +15,8 @@ library(readr)
 library(dataAN)
 ```
 
+## Import de la table des questions réponses sur l'Europe
+
 ```{r}
 make_table_europe() %>% glimpse()
 ```
@@ -30,7 +32,7 @@ write_csv(table_europe, "../raw-data/table_europe.csv")
 
 Attention, erreur d'importation avec les réponses de la question 6 : 
 
-```{r}
+```{r, eval=FALSE}
 library(jsonlite)
 fromJSON("http://data.assemblee-nationale.fr/static/openData/repository/CONSULTATIONS_CITOYENNES/EUROPE/Europe_reponses_ouvertes.json")
 ```
